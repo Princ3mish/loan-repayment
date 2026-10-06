@@ -1,162 +1,217 @@
-# Vitto Loan Repayment Service
+<div align="center">
 
-A deterministic, reducing-balance loan repayment and payment allocation service with paise-precision accounting, row-level concurrency control, and idempotency guarantees.
+# 🏦 Vitto — Loan Repayment Service
 
-## Live Demo
+**A production-grade reducing-balance loan management API with paise-precision accounting, row-level concurrency control, and full idempotency guarantees.**
 
-Deployed URL: DEPLOYED_URL_HERE
+[![CI](https://github.com/Princ3mish/loan-repayment/actions/workflows/ci.yml/badge.svg)](https://github.com/Princ3mish/loan-repayment/actions/workflows/ci.yml)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth-orange?logo=firebase)](https://firebase.google.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)](https://www.postgresql.org)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://loan-repayment-flax.vercel.app)
 
-Test account credentials are provided in the submission email.
+</div>
 
-## Seeded Loans
+---
+
+## 🌐 Live Demo
+
+**[https://loan-repayment-flax.vercel.app](https://loan-repayment-flax.vercel.app)**
+
+> Test account credentials are provided in the submission email.
+
+---
+
+## ✨ Key Features
+
+| Feature | Detail |
+|---|---|
+| **Reducing-balance EMI** | Standard monthly formula, EMI rounded to nearest rupee |
+| **Paise-precision arithmetic** | All amounts stored as `BIGINT` paise; no floating-point rounding |
+| **Allocation waterfall** | Oldest instalment first; interest before principal within each instalment |
+| **Idempotency** | Unique `(loan_id, idempotency_key)` DB constraint — safe to replay |
+| **Row-level locking** | `SELECT … FOR UPDATE` serialises concurrent payments on the same loan |
+| **Overdue tracking** | Dynamic `overdueAmount`, `overdueInstallmentCount`, `oldestOverdueDays` |
+| **Overpayment cascading** | Excess funds auto-settle future instalments in date order |
+| **Rate limiting** | 30 req / min sliding window per user (disable with `DISABLE_RATE_LIMIT=true`) |
+| **CI/CD** | GitHub Actions → Vercel; migrations run automatically on deploy |
+
+---
+
+## 🗂 Seeded Loans
 
 | Letter | Scenario | Loan ID | What to look at |
-| --- | --- | --- | --- |
-| A | Overdue with late and partial payments | `e1e2ad21-c7fc-4010-8622-6dda363b3a94` | ₹64,895 overdue as of October 2026 (grows as further instalments fall due); instalment 2 paid 11 days late; instalment 3 partially paid |
-| B | Up to date | `8c329b0c-a479-4ee6-83a1-6b6e00fabb62` | Nothing overdue, next due 15 Oct 2026 |
-| C | New loan, no payments | `dc1db682-80bd-490f-ae87-410ed56d587e` | 3-month loan with no payments yet, first due 20 Oct 2026 |
-| D | Paid ahead via overpayment | `850ccbd3-624a-490a-9cf4-6a1028a54989` | Two double-EMI payments settled instalments 1-4, next due 1 Nov 2026 |
+|---|---|---|---|
+| A | Overdue — late & partial payments | `e1e2ad21-c7fc-4010-8622-6dda363b3a94` | ₹64,895 overdue as of Oct 2026; instalment 2 paid 11 days late; instalment 3 partial |
+| B | Fully up to date | `8c329b0c-a479-4ee6-83a1-6b6e00fabb62` | Nothing overdue; next due 15 Oct 2026 |
+| C | New loan, no payments | `dc1db682-80bd-490f-ae87-410ed56d587e` | 3-month loan; first instalment due 20 Oct 2026 |
+| D | Paid ahead via overpayment | `850ccbd3-624a-490a-9cf4-6a1028a54989` | Two double-EMI payments settled instalments 1–4; next due 1 Nov 2026 |
 
-## Stack and Hosting
+---
 
-- **Framework**: Next.js (App Router, JavaScript only)
-- **Database**: PostgreSQL on Neon
-- **Authentication**: Firebase Authentication
-- **Hosting**: Vercel (Region `sin1`)
-- **Database Client**: `pg` pool with plain SQL migrations
+## 🛠 Stack
 
-## Local Setup
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 — App Router, JavaScript only |
+| Database | PostgreSQL 16 on [Neon](https://neon.tech) (region `sin1`) |
+| Auth | Firebase Authentication (client) + Firebase Admin SDK (server) |
+| Hosting | Vercel — serverless functions, region `sin1` |
+| Tests | Vitest — unit + integration against a real PostgreSQL instance |
+| CI | GitHub Actions — runs on every push and pull request |
 
-1. Clone the repository and install dependencies:
-   ```bash
-   git clone https://github.com/Princ3mish/loan-repayment.git
-   cd loan-repayment
-   npm install
-   ```
-2. Copy environment file and configure secrets:
-   ```bash
-   cp .env.example .env.local
-   ```
-   - `DATABASE_URL`: PostgreSQL connection string with SSL.
-   - `NEXT_PUBLIC_FIREBASE_*`: Firebase Client configuration for frontend authentication.
-   - `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`: Firebase Admin SDK credentials for token verification.
-   - `TEST_USER_EMAIL`, `TEST_USER_PASSWORD`: Credentials for the automated test / seed user.
-   - `DISABLE_RATE_LIMIT`: Optional flag (`true` or `false`) to bypass rate limiting in local tests.
-3. Run migrations, start dev server, and seed data:
-   ```bash
-   npm run db:migrate
-   npm run dev
-   npm run seed
-   ```
+---
 
-## Tests
+## 🚀 Local Setup
 
-Run the complete test suite with Vitest:
 ```bash
-npm test
-```
-To run only unit tests without hitting a database:
-```bash
-npm run test:unit
+# 1. Clone and install
+git clone https://github.com/Princ3mish/loan-repayment.git
+cd loan-repayment
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# Fill in the values described below
+
+# 3. Migrate, start, and seed
+npm run db:migrate
+npm run dev
+npm run seed
 ```
 
-- **Unit Coverage**: Pure function tests for reducing-balance schedule calculation, remainder absorption, paise-precision money arithmetic, waterflow payment allocations, and request payload validations.
-- **Integration Coverage**: End-to-end tests exercising real Next.js route handlers against PostgreSQL with Firebase authentication, verifying loan creation, payment recording, strict idempotency replays/conflicts, and row-level locking under concurrent requests.
-- **Database Environments**: Set `TEST_DATABASE_URL` (e.g. a separate Neon branch) in `.env.local` for isolated local testing. In CI, a dedicated `postgres:16` service container is spun up automatically.
-- **GitHub Actions Secrets**: The CI workflow runs on every push and pull request and requires the following repository secrets:
-  - `NEXT_PUBLIC_FIREBASE_API_KEY`
-  - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-  - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-  - `NEXT_PUBLIC_FIREBASE_APP_ID`
-  - `FIREBASE_PROJECT_ID`
-  - `FIREBASE_CLIENT_EMAIL`
-  - `FIREBASE_PRIVATE_KEY`
-  - `TEST_USER_EMAIL`
-  - `TEST_USER_PASSWORD`
+### Environment Variables
 
-## API Reference
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string (SSL required) |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase client API key |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase client auth domain |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase client project ID |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase client app ID |
+| `FIREBASE_PROJECT_ID` | Firebase Admin SDK project ID |
+| `FIREBASE_CLIENT_EMAIL` | Firebase Admin SDK service account email |
+| `FIREBASE_PRIVATE_KEY` | Firebase Admin SDK private key (literal `\n` sequences supported) |
+| `TEST_USER_EMAIL` | Email used by seed script and integration tests |
+| `TEST_USER_PASSWORD` | Password for the test user |
+| `TEST_DATABASE_URL` | Optional isolated DB for tests (falls back to `DATABASE_URL`) |
+| `DISABLE_RATE_LIMIT` | Set `true` to bypass rate limiting locally |
+
+---
+
+## 🧪 Tests
+
+```bash
+npm test           # Full suite (unit + integration, requires DB)
+npm run test:unit  # Unit tests only — no database needed
+```
+
+### Coverage
+
+| Suite | What is tested |
+|---|---|
+| `money.test.js` | Paise parsing, formatting, arithmetic edge cases |
+| `validation.test.js` | Request payload validation rules |
+| `schedule.test.js` | Reducing-balance schedule generation and final-instalment rounding absorption |
+| `allocation.test.js` | Payment allocation waterfall, partial payments, overpayment cascading |
+| `api.integration.test.js` | Full HTTP round-trips — loan creation, idempotent replays, conflict detection, concurrent serialisation |
+
+> Integration tests spin up real Next.js route handlers against PostgreSQL and authenticate via the Firebase REST API, exercising exactly the same code paths as production.
+
+### CI Secrets Required
+
+The GitHub Actions workflow requires these repository secrets:
+
+`NEXT_PUBLIC_FIREBASE_API_KEY` · `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` · `NEXT_PUBLIC_FIREBASE_PROJECT_ID` · `NEXT_PUBLIC_FIREBASE_APP_ID` · `FIREBASE_PROJECT_ID` · `FIREBASE_CLIENT_EMAIL` · `FIREBASE_PRIVATE_KEY` · `TEST_USER_EMAIL` · `TEST_USER_PASSWORD`
+
+---
+
+## 📡 API Reference
+
+All endpoints require a Firebase ID token:
+```
+Authorization: Bearer <firebase-id-token>
+```
 
 ### Endpoints
 
-| Method | Endpoint | Request Body | Success Status |
-| --- | --- | --- | --- |
-| `POST` | `/api/loans` | `{ principal, annualInterestRate, tenureMonths, disbursementDate }` | `201 Created` |
-| `GET` | `/api/loans` | None | `200 OK` |
-| `GET` | `/api/loans/:id` | None | `200 OK` |
-| `POST` | `/api/loans/:id/payments` | `{ amount, paymentDate, idempotencyKey? }` | `200 OK` |
+| Method | Path | Body | Status |
+|---|---|---|---|
+| `POST` | `/api/loans` | `{ principal, annualInterestRate, tenureMonths, disbursementDate }` | `201` |
+| `GET` | `/api/loans` | — | `200` |
+| `GET` | `/api/loans/:id` | — | `200` |
+| `POST` | `/api/loans/:id/payments` | `{ amount, paymentDate, idempotencyKey? }` | `200` |
 
-The payment idempotency key may be provided as an `Idempotency-Key` HTTP header or as `idempotencyKey` inside the JSON request body.
+The idempotency key can be supplied as the `Idempotency-Key` HTTP header **or** as `idempotencyKey` in the JSON body.
 
 ### Response Envelope
 
-Success response:
 ```json
-{
-  "success": true,
-  "data": { ... }
-}
-```
-
-Error response:
-```json
-{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid request payload",
-    "details": [ ... ]
-  }
-}
+{ "success": true,  "data": { ... } }
+{ "success": false, "error": { "code": "...", "message": "...", "details": [...] } }
 ```
 
 ### Error Codes
 
-- `400 VALIDATION_ERROR`: Missing or malformed parameters.
-- `400 INVALID_JSON`: Request body is not valid JSON.
-- `401 UNAUTHENTICATED`: Missing, expired, or invalid Firebase ID token.
-- `404 LOAN_NOT_FOUND`: Target loan ID does not exist.
-- `409 IDEMPOTENCY_CONFLICT`: Idempotency key reused with mismatched amount or date.
-- `422 PAYMENT_EXCEEDS_OUTSTANDING`: Payment amount exceeds total remaining loan balance.
-- `422 LOAN_ALREADY_CLOSED`: Loan is already fully settled.
-- `429 RATE_LIMITED`: Rate limit exceeded (limit: 30 requests per minute).
-- `500 INTERNAL_ERROR`: Internal server failure.
+| Code | Status | Meaning |
+|---|---|---|
+| `VALIDATION_ERROR` | 400 | Missing or malformed parameters |
+| `INVALID_JSON` | 400 | Request body is not valid JSON |
+| `UNAUTHENTICATED` | 401 | Missing, expired, or invalid Firebase ID token |
+| `LOAN_NOT_FOUND` | 404 | Target loan does not exist |
+| `IDEMPOTENCY_CONFLICT` | 409 | Idempotency key reused with different amount or date |
+| `PAYMENT_EXCEEDS_OUTSTANDING` | 422 | Payment exceeds total remaining balance |
+| `LOAN_ALREADY_CLOSED` | 422 | Loan is fully settled |
+| `RATE_LIMITED` | 429 | 30 requests per minute exceeded |
+| `INTERNAL_ERROR` | 500 | Unexpected server error |
 
-## Money Type
+---
 
-- All monetary amounts are stored internally as integer `BIGINT` paise (1 INR = 100 paise) to prevent floating-point rounding errors.
-- Decimal rupee strings with exactly two decimal places (e.g., `"9985.00"`) are used across the API boundary.
-- Input parsing uses string split and integer math; floats are never multiplied by 100.
-- Annual interest rates are stored as integer basis points (e.g., 18.00% = `1800` bps).
+## 💰 Money & Schedule Model
 
-## Schedule and Rounding
+- All monetary values stored as integer **BIGINT paise** (1 INR = 100 paise).
+- API boundary uses decimal rupee strings with exactly two decimal places: `"9985.00"`.
+- Annual interest rates stored as integer **basis points** (18.00% → `1800`).
+- EMI formula (reducing balance):
 
-- Repayment schedules are generated using the standard reducing-balance monthly EMI formula:
-  $$E = P \cdot \frac{r(1+r)^n}{(1+r)^n - 1}$$
-- The monthly EMI is rounded to the nearest whole rupee.
-- Each instalment's monthly interest is computed and rounded to the nearest paisa on the opening principal balance:
-  $$\text{interestPaise} = \text{round}\left(\frac{\text{balancePaise} \times \text{bps}}{120000}\right)$$
-- The final instalment absorbs any remaining rounding difference so that total scheduled principal sums exactly to the disbursed principal.
-- Example: Principal ₹2,00,000 at 18.00% for 24 months yields a monthly EMI of ₹9,985.00.
+$$E = P \cdot \frac{r(1+r)^n}{(1+r)^n - 1}$$
 
-## Allocation Order and Edge Cases
+- Monthly interest per instalment: $\text{interestPaise} = \text{round}\!\left(\dfrac{\text{balancePaise} \times \text{bps}}{120000}\right)$
+- The **final instalment absorbs all rounding differences** so scheduled principal sums exactly to the disbursed principal.
+- Example: ₹2,00,000 at 18.00% for 24 months → EMI **₹9,985.00**.
 
-- **Allocation Priority**: Payments are applied to the oldest outstanding instalment first. Within each instalment, interest is settled before principal.
-- **Overpayment**: Excess funds automatically cascade to settle subsequent instalments. Overpayment settles future scheduled instalments in chronological order (it does not reduce principal or re-amortise, as prepayment closure is out of scope).
-- **Underpayment**: Partial payments satisfy due interest first and remaining amounts against principal, leaving the instalment in a `PARTIALLY_PAID` state.
-- **Overdue Tracking**: An instalment becomes overdue starting the day after its `dueDate`. The loan position dynamically reports `overdueAmount`, `overdueInstallmentCount`, and `oldestOverdueDays`.
-- **Late Payments**: Payments made after the due date are allocated normally, flagging the instalment with `paidLate = true`. No penalty interest is applied.
-- **Overpayment Guard**: Any payment exceeding the total outstanding loan balance is rejected with `422 PAYMENT_EXCEEDS_OUTSTANDING`.
-- **Date Validation**: Payments dated prior to loan disbursement or in the future (past current IST date) are rejected with `400 VALIDATION_ERROR`.
-- **Idempotency**: Duplicate payment submissions are prevented via unique `(loan_id, idempotency_key)` constraints. Replaying an identical payload returns the existing payment with `200 OK` and `replayed: true`. Reusing a key with different parameters is rejected with `409 IDEMPOTENCY_CONFLICT`.
+---
 
-## Concurrency and Integrity
+## ⚙️ Allocation & Edge Cases
 
-- Each payment transaction acquires an exclusive row-level lock using `SELECT * FROM loans WHERE id = $1 FOR UPDATE` and locks associated instalments. Concurrent payment submissions on the same loan are strictly serialised, preventing race conditions on allocations and idempotency checks.
-- Relational integrity is enforced at the PostgreSQL schema level via foreign keys (`ON DELETE CASCADE` / `ON DELETE RESTRICT`) and `CHECK` constraints (e.g., paid amounts cannot exceed due amounts, amounts must be positive).
+- **Priority**: Oldest instalment first; within each instalment — interest before principal.
+- **Overpayment**: Cascades forward through future instalments in chronological order.
+- **Underpayment**: Satisfies interest first, remainder against principal → `PARTIALLY_PAID`.
+- **Late payments**: Allocated normally; instalment flagged `paidLate: true`. No penalty interest.
+- **Overdue**: Day after `dueDate`. Reported dynamically on the loan position.
+- **Date guard**: Payments before disbursement date or after today (Asia/Kolkata) are rejected.
+- **Overpayment guard**: Amount exceeding total outstanding balance → `422 PAYMENT_EXCEEDS_OUTSTANDING`.
 
-## Limitations and Scaling Notes
+---
 
-- **Distributed Rate Limiting**: The current sliding-window rate limiter is in-memory per container instance and can be backed by Redis in multi-instance production environments.
-- **Horizontal Scaling**: Next.js API handlers are fully stateless, enabling seamless horizontal auto-scaling on serverless platforms.
-- **Read Replicas**: High-volume read traffic (`GET /api/loans`, `GET /api/loans/:id`) can be offloaded to PostgreSQL read replicas while write transactions remain on the primary node.
-- **Multi-Tenancy**: Loans are currently global across authenticated users per project specification, with user ownership scoping adaptable via user ID relational filters.
+## 🔒 Concurrency & Integrity
+
+- Each payment transaction acquires an **exclusive row-level lock** (`SELECT … FOR UPDATE`) on the loan and its instalments — concurrent submissions are strictly serialised.
+- Schema-level integrity: foreign keys (`ON DELETE CASCADE` / `RESTRICT`) and `CHECK` constraints (paid ≤ due, amounts positive).
+
+---
+
+## 📈 Scaling Notes
+
+- **Rate limiting**: In-memory sliding window per container; swap for Redis in multi-instance deployments.
+- **Stateless handlers**: Next.js API routes are fully stateless — horizontal auto-scaling on Vercel requires no changes.
+- **Read replicas**: `GET` endpoints can target a read replica while writes stay on the primary.
+- **Multi-tenancy**: Loan ownership scoping is adaptable via user ID relational filters.
+
+---
+
+<div align="center">
+
+Built with Next.js · PostgreSQL · Firebase · Vercel
+
+</div>
