@@ -1,5 +1,5 @@
 const nextConfig = {
-  serverExternalPackages: ["firebase-admin", "pg"],
+  serverExternalPackages: ["pg"],
 };
 
 export default nextConfig;

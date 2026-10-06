@@ -57,7 +57,7 @@ Test Password : reviewer@123
 |---|---|
 | Framework | Next.js 16 — App Router, JavaScript only |
 | Database | PostgreSQL 16 on [Neon](https://neon.tech) (region `sin1`) |
-| Auth | Firebase Authentication (client) + Firebase Admin SDK (server) |
+| Auth | Firebase Authentication (client) + `jose` JWT verification (server) |
 | Hosting | Vercel — serverless functions, region `sin1` |
 | Tests | Vitest — unit + integration against a real PostgreSQL instance |
 | CI | GitHub Actions — runs on every push and pull request |
@@ -105,7 +105,7 @@ npm run test:unit  # Unit tests only — no database needed
 
 The GitHub Actions workflow requires these repository secrets:
 
-`NEXT_PUBLIC_FIREBASE_API_KEY` · `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` · `NEXT_PUBLIC_FIREBASE_PROJECT_ID` · `NEXT_PUBLIC_FIREBASE_APP_ID` · `FIREBASE_PROJECT_ID` · `FIREBASE_CLIENT_EMAIL` · `FIREBASE_PRIVATE_KEY` · `TEST_USER_EMAIL` · `TEST_USER_PASSWORD`
+`NEXT_PUBLIC_FIREBASE_API_KEY` · `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` · `NEXT_PUBLIC_FIREBASE_PROJECT_ID` · `NEXT_PUBLIC_FIREBASE_APP_ID` · `FIREBASE_PROJECT_ID` · `TEST_USER_EMAIL` · `TEST_USER_PASSWORD`
 
 ---
 
@@ -115,6 +115,7 @@ All endpoints require a Firebase ID token:
 ```
 Authorization: Bearer <firebase-id-token>
 ```
+ID tokens are verified server-side by checking the RS256 signature against Google's published Firebase keys plus issuer, audience, expiry and subject.
 
 ### Endpoints
 
