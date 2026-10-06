@@ -10,7 +10,8 @@
     "lint": "eslint",
     "db:migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:unit": "vitest run --exclude tests/api.integration.test.js"
   },
   "dependencies": {
     "firebase": "^12.19.0",
