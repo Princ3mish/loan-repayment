@@ -12,10 +12,10 @@ Test account credentials are provided in the submission email.
 
 | Letter | Scenario | Loan ID | What to look at |
 | --- | --- | --- | --- |
-| A | Overdue with late and partial payments | `e7b85b0e-99d7-45ca-8a49-32440cbda6d5` | ₹64,895 overdue across 7 instalments; instalment 2 paid 11 days late; instalment 3 partially paid |
-| B | Up to date | `3cfdcd51-a5cd-45cd-b3c0-9d0333e59614` | Nothing overdue, next due 15 Oct 2026 |
-| C | New loan, no payments | `1cb3951d-16a1-4ee4-bbec-4a5ed3741bc7` | 3-month loan with no payments yet, first due 20 Oct 2026 |
-| D | Paid ahead via overpayment | `7756a152-f1eb-4e28-b539-62a8eb7e90cf` | Two double-EMI payments settled instalments 1-4, next due 1 Nov 2026 |
+| A | Overdue with late and partial payments | `d917a850-22eb-4421-ad7a-6e6a91cd1426` | ₹64,895 overdue across 7 instalments; instalment 2 paid 11 days late; instalment 3 partially paid |
+| B | Up to date | `bad76283-8dc4-424a-9991-070709b9b56c` | Nothing overdue, next due 15 Oct 2026 |
+| C | New loan, no payments | `46a8a931-8c7f-4eeb-9d93-e33cb44bbdd7` | 3-month loan with no payments yet, first due 20 Oct 2026 |
+| D | Paid ahead via overpayment | `5f008b6a-8076-4794-839d-fb3c7f2290c0` | Two double-EMI payments settled instalments 1-4, next due 1 Nov 2026 |
 
 ## Stack and Hosting
 
