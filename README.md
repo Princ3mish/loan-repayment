@@ -80,25 +80,6 @@ npm run dev
 npm run seed
 ```
 
-### Environment Variables
-
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string (SSL required) |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase client API key |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase client auth domain |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase client project ID |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase client app ID |
-| `FIREBASE_PROJECT_ID` | Firebase Admin SDK project ID |
-| `FIREBASE_CLIENT_EMAIL` | Firebase Admin SDK service account email |
-| `FIREBASE_PRIVATE_KEY` | Firebase Admin SDK private key (literal `\n` sequences supported) |
-| `TEST_USER_EMAIL` | Email used by seed script and integration tests |
-| `TEST_USER_PASSWORD` | Password for the test user |
-| `TEST_DATABASE_URL` | Optional isolated DB for tests (falls back to `DATABASE_URL`) |
-| `DISABLE_RATE_LIMIT` | Set `true` to bypass rate limiting locally |
-
----
-
 ## 🧪 Tests
 
 ```bash
