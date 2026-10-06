@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "node scripts/migrate.js && next build",
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "node scripts/migrate.js",
