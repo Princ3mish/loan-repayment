@@ -6,15 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "node scripts/migrate.js",
+    "test": "vitest run"
   },
   "dependencies": {
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
     "next": "16.3.8",
+    "pg": "^8.23.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@rolldown/binding-win32-x64-msvc": "^1.2.12",
+    "dotenv": "^18.0.5",
     "eslint": "^9",
-    "eslint-config-next": "16.3.8"
+    "eslint-config-next": "16.3.8",
+    "vitest": "^5.0.3"
   }
 }
