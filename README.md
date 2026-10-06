@@ -51,11 +51,28 @@ Test account credentials are provided in the submission email.
 
 ## Tests
 
-Run the test suite locally:
+Run the complete test suite with Vitest:
 ```bash
 npm test
 ```
-CI runs on every push via GitHub Actions (details to be completed).
+To run only unit tests without hitting a database:
+```bash
+npm run test:unit
+```
+
+- **Unit Coverage**: Pure function tests for reducing-balance schedule calculation, remainder absorption, paise-precision money arithmetic, waterflow payment allocations, and request payload validations.
+- **Integration Coverage**: End-to-end tests exercising real Next.js route handlers against PostgreSQL with Firebase authentication, verifying loan creation, payment recording, strict idempotency replays/conflicts, and row-level locking under concurrent requests.
+- **Database Environments**: Set `TEST_DATABASE_URL` (e.g. a separate Neon branch) in `.env.local` for isolated local testing. In CI, a dedicated `postgres:16` service container is spun up automatically.
+- **GitHub Actions Secrets**: The CI workflow runs on every push and pull request and requires the following repository secrets:
+  - `NEXT_PUBLIC_FIREBASE_API_KEY`
+  - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+  - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+  - `NEXT_PUBLIC_FIREBASE_APP_ID`
+  - `FIREBASE_PROJECT_ID`
+  - `FIREBASE_CLIENT_EMAIL`
+  - `FIREBASE_PRIVATE_KEY`
+  - `TEST_USER_EMAIL`
+  - `TEST_USER_PASSWORD`
 
 ## API Reference
 
