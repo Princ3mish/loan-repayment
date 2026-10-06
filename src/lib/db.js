@@ -1,4 +1,7 @@
-import { Pool } from "pg";
+import { Pool, types } from "pg";
+
+types.setTypeParser(20, (val) => parseInt(val, 10));
+types.setTypeParser(1082, (val) => val);
 
 const isLocalhost =
   !process.env.DATABASE_URL ||
