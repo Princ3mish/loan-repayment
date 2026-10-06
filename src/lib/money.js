@@ -32,3 +32,12 @@ export function percentToBps(value) {
   const paddedFrac = fracPart.padEnd(2, "0");
   return parseInt(intPart, 10) * 100 + parseInt(paddedFrac, 10);
 }
+
+export function bpsToPercent(bps) {
+  const isNegative = bps < 0;
+  const absBps = Math.abs(bps);
+  const percent = Math.floor(absBps / 100);
+  const rem = absBps % 100;
+  const formatted = `${percent}.${String(rem).padStart(2, "0")}`;
+  return isNegative ? `-${formatted}` : formatted;
+}
