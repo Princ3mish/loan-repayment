@@ -7,7 +7,7 @@ import {
 import { ApiError } from "@/lib/api.js";
 
 describe("Validation Utilities", () => {
-  it("validates create loan payload and returns all field errors", () => {
+  it("validates create loan payloads, payment amounts, and loan IDs", () => {
     try {
       validateCreateLoan({
         principal: -5,
@@ -27,9 +27,7 @@ describe("Validation Utilities", () => {
       expect(fields).toContain("tenureMonths");
       expect(fields).toContain("disbursementDate");
     }
-  });
 
-  it("validates payment payload amounts", () => {
     const invalidAmounts = ["ten", -100];
     for (const amt of invalidAmounts) {
       expect(() =>
@@ -45,9 +43,7 @@ describe("Validation Utilities", () => {
         })
       );
     }
-  });
 
-  it("validates loan ID UUID format and throws 404 on invalid ID", () => {
     try {
       validateLoanId("abc");
       expect.unreachable();
