@@ -15,6 +15,10 @@ const poolConfig = {
 
 const pool = globalThis.pgPool || new Pool(poolConfig);
 
+pool.on("error", (err) => {
+  console.error(JSON.stringify({ event: "pool.error", message: err.message }));
+});
+
 if (process.env.NODE_ENV !== "production") {
   globalThis.pgPool = pool;
 }

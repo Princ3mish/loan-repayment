@@ -45,7 +45,9 @@ export async function apiFetch(path, options = {}) {
   try {
     json = await res.json();
   } catch {
-    const error = new Error("Failed to parse JSON response");
+    const error = new Error(
+      `Server returned ${res.status} (non-JSON response)`
+    );
     error.status = res.status;
     error.code = "NETWORK_ERROR";
     error.details = undefined;
