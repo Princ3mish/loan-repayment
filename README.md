@@ -18,7 +18,9 @@
 
 **[https://loan-repayment-flax.vercel.app](https://loan-repayment-flax.vercel.app)**
 
-> Test account credentials are provided in the submission email.
+> Test credentials 
+Test Email : reviewer@vittotest.com
+Test Password : reviewer@123
 
 ---
 
