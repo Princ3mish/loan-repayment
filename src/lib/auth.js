@@ -29,7 +29,13 @@ export async function requireAuth(request) {
       uid: decoded.uid,
       email: decoded.email || null,
     };
-  } catch {
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        event: "auth.failed",
+        reason: error.code || error.message,
+      })
+    );
     throw new ApiError(
       401,
       "UNAUTHENTICATED",
