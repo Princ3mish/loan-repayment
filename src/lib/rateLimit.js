@@ -23,6 +23,10 @@ function getClientIp(request) {
 }
 
 export function checkRateLimit(request, bucket) {
+  if (process.env.DISABLE_RATE_LIMIT === "true") {
+    return { allowed: true, retryAfterSeconds: 0 };
+  }
+
   const now = Date.now();
   if (store.size > 500) {
     for (const [k, v] of store.entries()) {
